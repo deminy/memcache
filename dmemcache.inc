@@ -373,7 +373,11 @@ function dmemcache_get_multi($keys, $bin = 'cache', $mc = NULL) {
   if ($mc || ($mc = dmemcache_object($bin))) {
     if ($mc instanceof Memcached) {
       $null = NULL;
-      $results = $mc->getMulti($full_keys, $null, Memcached::GET_PRESERVE_ORDER);
+      if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
+        $results = $mc->getMulti($full_keys, Memcached::GET_PRESERVE_ORDER);
+      } else {
+        $results = $mc->getMulti($full_keys, $null, Memcached::GET_PRESERVE_ORDER);
+      }
     }
     elseif ($mc instanceof Memcache) {
       $track_errors = ini_set('track_errors', '1');
